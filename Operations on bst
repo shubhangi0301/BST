@@ -1,574 +1,562 @@
-#include<iostream>
+	#include <iostream>
+#include <bits/stdc++.h>
+#include <queue> 
 using namespace std;
-#define MAX 20
-
-class bstnode
+class bst
+{   
+    struct node
 {
-	public:
-	int info;
-	bstnode *left, *right;
-	
-	bstnode()
-	{
-		info=0;
-		left=0;
-		right=0;
-	}	
-
-	bstnode(int x)
-	{
-		info=x;
-		left=0;
-		right=0;
-	}
+  public: int data;
+          node* right;
+          node* left;
 };
-
-class stack
-{
-	bstnode *st[MAX];
-	int top;
-	
-	public:
-		stack()
-		{
-			top=-1;
-		}
-
-		int isempty()
-		{
-			if(top==-1)
-				return 1;
-			else 
-				return 0;
-		}
-
-		void push(bstnode *x)
-		{
-			if(top==(MAX-1))
-				cout<<"\nStack overflow";
-			else
-			{
-				top=top+1;
-				st[top]=x;
-			}
-		}
-
-		bstnode* ret_top()
-		{
-			return st[top];
-		}
-
-		bstnode* pop()
-		{
-			if(top==-1)
-				cout<<"\nUnderflow";
-			else
-			{
-				bstnode* x=st[top];
-				top=top-1;
-				return x;
-			}	
-		}
-};
-
-class queue
-{
-	bstnode *A[MAX];
-	int front, rear;
-    public:
-	queue()
-	{
-		front= -1;
-		rear= -1;
-	}
-	
-	int IsEmpty()
-	{
-        if((front == -1)&&(rear == -1))
-            return 1;
+    public: node* root;
+    
+    bst()
+    {
+        root=NULL;
+    }
+    void insert(int a)
+    {   node* ptr=new node;
+        node* p=new node;
+        node* p1=new node;
+        ptr->data=a;
+        ptr->right=NULL;
+        ptr->left=NULL;
+        if(root==NULL)
+        {
+            root=ptr;
+        }
         else
-            return 0;
-	}
-
-	int IsFull()
-	{
-		if((front == rear+1)||((front == 0)&&(rear == MAX-1)))
-            return 1;
-        else
-            return 0;
-	}
-	
-	void Enqueue(bstnode *x)
-	{
-		if(IsFull())
-		{
-			cout<<"\nQueue is full.";
-			return;
-		}
-		else
-		{
-		    if(front == -1)
+        {
+            p=root;
+            while(p!=NULL)
             {
-                rear++;
-                front++;
+                if(a<p->data)
+                {
+                    p1=p;
+                    p=p->left;
+                }
+                else
+                {
+                    p1=p;
+                    p=p->right;
+                }
             }
-            else if(rear == MAX-1)
+            if(a<p1->data)
             {
-                rear=0;
+               p1->left=ptr;
             }
             else
             {
-                rear++;
+               p1->right=ptr;
             }
-            A[rear]=x;
-		}
-	}
-	
-	bstnode* Dequeue()
-	{
-		if(IsEmpty())
-		{
-			cout<<"\nQueue is empty.";
-		}
-		else
-		{
-			bstnode *x= A[front];
-			if(front == MAX-1 )
-			{
-				front = 0;
-			}
-			else if(front == rear)
-			{
-				front = rear = -1;
-			}
-			else
-	        {
-	            front++;
-			}
-			return x;
-		}
-	}
-};
-
-class bst
-{
-	bstnode *root;
-	stack s;
-	queue q;
-	public:
-	bst()
-	{
-		root=0;
-	}
-		
-	void insert(int x)			//function for inserting values to binary tree.
-	{
-		bstnode *p, *q, *prev;
-		p=new bstnode(x);
-		q=root;
-		if(q==0)
-		{
-			root=p;
-		}
-		else
-		{
-			while(q!=0)
-			{
-				if(x<q->info)
-				{
-					prev=q;
-					q=q->left;
-				}
-				else
-				{
-					prev=q;
-					q=q->right;
-				}
-			}
-			
-			if(x<prev->info)
-				prev->left=p;
-			else
-				prev->right=p;
-		}
-	}
-	
-	bstnode* ret_root()
-	{
-		return root;
-	}	
-
-//***********************ITERATIVE TRAVERSALS**********************
-	void pre_order_ite(bstnode *p)
-	{
-		bstnode *q;
- 		if(p!=0)
-		{
-			if(p!=0)
-				s.push(p);
-			
-			while(!s.isempty())
-			{
-				q=s.pop();
-				cout<<q->info<<" ";
-				if(q->right!=0)
-					s.push(q->right);
-				if(q->left!=0)
-					s.push(q->left);
-			}
-		}
-		else
-			cout<<"\nTree is empty.";
-	}
-			
-	void in_order_ite( bstnode *p)
-	{
-		if(p!=0)
-		{
-			while(p!=0)
-			{
-				while(p!=0)
-				{
-					if(p->right!=0)
-						s.push(p->right);
-					s.push(p);
-					p=p->left;
-				}
-				p=s.pop();
-				while( !s.isempty() && p->right==0)
-				{
-					cout<<p->info<<" ";
-					p=s.pop();
-				}
-				cout<<p->info<<" ";
-				if(!s.isempty())
-					p=s.pop();
-				else
-					p=0;
-			}
-		}
-		else
-			cout<<"\nTree is empty.";
-	}
-
-	void post_order_ite(bstnode *p)
-	{
-		if(p!=0)
-		{
-			do
-			{
-				while(p!=0)
-				{
-					if(p->right!=0)
-						s.push(p->right);
-					s.push(p);
-					p=p->left;
-				}
-				p=s.pop();
-				if( s.ret_top()==p->right  && p->right!=0)
-				{
-					s.pop();
-					s.push(p);
-					p=p->right;
-				}
-				else
-				{
-					cout<<p->info<<" ";
-					p=0;
-				}
-				
-			}while(!s.isempty());
-		}
-		else
-			cout<<"\nTree is empty.";
-		
-	}
-
-//*******************RECURSIVE TRAVERSALS****************
-	void pre_order_rec(bstnode *p)
-	{
-		if(p!=0)
-		{
-			cout<<p->info<<" ";
-			pre_order_rec(p->left);
-			pre_order_rec(p->right);
-		}
-		else
-			cout<<"\nTree is empty.";
-	}
-
-	void in_order_rec(bstnode *p)
-	{
-		if(p!=0)
-		{
-			pre_order_rec(p->left);
-			cout<<p->info<<" ";
-			pre_order_rec(p->right);
-		}
-		else
-			cout<<"\nTree is empty.";
-	}
-
-	void post_order_rec(bstnode *p)
-	{
-		if(p!=0)
-		{
-			pre_order_rec(p->left);
-			pre_order_rec(p->right);
-			cout<<p->info<<" ";
-		}		
-		else
-			cout<<"\nTree is empty.";
-	}
-	
-	void bfs(bstnode *p)				//Breadth first search traversal.
-	{
-		if(p!=0)
-		{
-			cout<<p->info<<" ";
-			do
-			{
-				if(p->left)
-					q.Enqueue(p->left);
-				if(p->right)
-					q.Enqueue(p->right);
-				p=q.Dequeue();
-				cout<<p->info<<" ";
-			}while(!q.IsEmpty());
-		}
-		else
-			cout<<"\nTree is empty.";
-	}			
-	
-	int height(bstnode *p)
-	{
-		if(p==0)
-			return 0;
-		else
-		{
-			int lht= height(p->left);
-			int rht= height(p->right);
-			
-			if(lht>rht)
-				return lht+1;
-			else
-				return rht+1;
-		}
-	}
-	
-	void mirror( bstnode *p)
-	{
-		bstnode *temp;
-		if(p!=0)
-		{
-			mirror(p->left);
-			mirror(p->right);
-			
-			temp=p->left;
-			p->left=p->right;
-			p->right=temp;
-		}
-	}
-	
-	int getLeafCount(bstnode *p)
-	{
-		
-		if( p==0)       
-			return 0;
-		if(p->left == 0 && p->right==0)      
-			return 1;            
-		else
-			return getLeafCount(p->left) + getLeafCount(p->right);      
-	}
-	
-	int totalNode(bstnode *p)
-	{
-		if(p==0)
-			return 0;
-		else
-			return 1+totalNode(p->left)+totalNode(p->right);
-	}
-	
-	int search(bstnode *p, int x)
-	{
-		if(p!=0)
-		{
-			if(p->info==x)
-				return 1;
-			else if( p->info<x)
-				search(p->right,x);
-			else
-				search(p->left,x);
-		}
-		else 
-			return 0;
-	}
-	
-	bstnode* FindMin(bstnode *node)
-	{
-        if(node==NULL)
-        {
-			/* There is no element in the tree */
-			return NULL;
         }
-        if(node->left) /* Go to the left sub tree to find the min element */
-			return FindMin(node->left);
-        else 
-			return node;
-	}
-	
-	bstnode * DeletebyCopying(bstnode *node, int info)
-	{
-        bstnode *temp;
-        if(node==0)
+    }
+    void rec_inorder(node* ptr)
+    {     if(ptr!=NULL)
         {
-			cout<<"\nElement Not Found";
+            rec_inorder(ptr->left);
+            cout<<ptr->data<<" ";
+            rec_inorder(ptr->right);
         }
-        else if(info < node->info)
+    }
+    void rec_preorder(node* ptr)
+    {
+        if(ptr!=NULL)
         {
-			node->left = DeletebyCopying(node->left, info);
+            cout<<ptr->data<<" ";
+            rec_preorder(ptr->left);
+            rec_preorder(ptr->right);
         }
-        else if(info > node->info)
+    }
+    void rec_postorder(node* ptr)
+    {   if(ptr!=NULL)
+      {
+        rec_postorder(ptr->left);
+        rec_postorder(ptr->right);
+        cout<<ptr->data<<" ";
+      }
+    }
+    void it_preorder(node* ptr)
+    {
+      stack <node*> s;   
+      if(ptr!=NULL)
+      {
+          s.push(ptr);
+          while(!s.empty())
+          {
+              ptr=s.top();
+              s.pop();
+              cout<<ptr->data<<" ";
+              if(ptr->right!=NULL)
+              {
+                 s.push(ptr->right);
+              }
+              if(ptr->left!=NULL)
+              {
+                 s.push(ptr->left);
+              }
+          }
+      }
+    }
+    void it_Inorder(node* ptr)
+    {
+        stack <node*> s;
+     while(ptr!=NULL||!s.empty())
+     {
+        while(ptr!=NULL)
         {
-			node->right = DeletebyCopying(node->right, info);
+           s.push(ptr);
+           ptr=ptr->left;
+        }
+            ptr=s.top();
+            s.pop();
+            cout<<ptr->data<<" ";
+            ptr=ptr->right;
+     }
+    }
+    void it_postorder(node* ptr)
+    {
+        stack <node*> s1;
+        stack <node*> s2;
+        s1.push(ptr);
+        while(!s1.empty())
+        {
+            ptr=s1.top();
+            s1.pop();
+            s2.push(ptr);
+            if(ptr->left!=NULL)
+            {
+            s1.push(ptr->left);
+            }
+            if(ptr->right!=NULL)
+            {
+            s1.push(ptr->right);
+            }
+        }
+        while(!s2.empty())
+        {
+            cout<<s2.top()->data<<" ";
+            s2.pop();
+        }
+    }
+    void search(int n)
+    {   int flag=0,i=0;
+        node* ptr=new node;
+        node* ptr1=new node;
+        ptr=root;
+        if(root==NULL)
+        {
+            cout<<"Binary search tree is empty "<<endl;
         }
         else
         {
-			if(node->right && node->left)			//Two child
-			{
-					
-					temp = FindMin(node->right);
-					node -> info = temp->info; 		//Copy minimum value of right sub-tree onto node to be deleted.
-		
-					node -> right = DeletebyCopying(node->right,temp->info);	//Delete node copied onto node to be deleted.
-			}
-			else									// Only child or One child.
-			{
-					temp = node;
-					if(node->left == NULL)
-							node = node->right;
-					else if(node->right == NULL)
-							node = node->left;
-					delete (temp);
-			}
+            while(ptr!=NULL)
+            {
+                if(n<ptr->data)
+                {
+                    ptr1=ptr;
+                    ptr=ptr->left;
+                    i++;
+                }
+                else
+                if(n==ptr->data)
+                {
+                    cout<<"Your entered data "<<n<<" is present in Binary Search Tree at "<<i<< " th level"<<endl;
+                    flag=1;
+                    break;
+                }
+                else
+                {
+                    ptr1=ptr;
+                    ptr=ptr->right;
+                    i++;
+                }
+            }
+            if(flag==0)
+            {
+            cout<<"Your entered data "<<n<<" is not present in the Binary Search Tree "<<endl;
+            }
         }
-        return node;
-	}
+    }
+    void bfs(node* ptr)
+    {
+        queue <node*> q;
+        q.push(ptr);
+        node* n=new node;
+        while(!q.empty())
+        {   
+            n=q.front();
+            cout<<n->data<<" ";
+            q.pop();
+            if(n->left!=NULL)
+            {
+                q.push(n->left);
+            }
+            if(n->right!=NULL)
+            {
+                q.push(n->right);
+            }
+        }
+    }
+    void mirror(node* ptr)
+    {   node* temp=new node;
+        if(ptr==NULL)
+        {
+            return;
+        }
+        else
+        {
+            mirror(ptr->left);
+            mirror(ptr->right);
+            temp=ptr->left;
+            ptr->left=ptr->right;
+            ptr->right=temp;
+        }
+    }
+    void number(node* ptr)
+    {   int i=0;
+        int j=1;
+       queue <node*> q;
+        q.push(ptr);
+        node* n=new node;
+        while(!q.empty())
+        {   
+            n=q.front();
+            q.pop();
+            if(n->left!=NULL)
+            {
+                q.push(n->left);
+                j++;
+            }
+            if(n->right!=NULL)
+            {
+                q.push(n->right);
+                j++;
+            }
+            if(n->right==NULL&&n->left==NULL)
+            {
+                i++;
+            }
+        }
+        cout<<"Total no. of nodes are: "<<j<<endl;
+        cout<<"Total no. of leaves are: "<<i<<endl;
+        cout<<"Total no. of non leaves are: "<<j-i<<endl;
+    }
+    void rep(int n1,int n2)
+    {
+      int flag=0;
+        node* ptr=new node;
+        node* ptr1=new node;
+        ptr=root;
+        if(root==NULL)
+        {
+            cout<<"Binary search tree is empty "<<endl;
+        }
+        else
+        {
+            while(ptr!=NULL)
+            {
+                if(n1<ptr->data)
+                {
+                    ptr1=ptr;
+                    ptr=ptr->left;
+                }
+                else
+                if(n1==ptr->data)
+                {
+                    //delete_merge(root,n1);
+                    insert(n2);
+                    flag=1;
+                    break;
+                }
+                else
+                {
+                    ptr1=ptr;
+                    ptr=ptr->right;
+                }
+            }
+            if(flag==0)
+            {
+            cout<<"Your entered data "<<n1<<" is not present in the Binary Search Tree "<<endl;
+            }
+        }  
+    }
+    int height(node* ptr)
+    {    int l,r;
+        if(ptr == NULL)
+             return 0;
+        l=height(ptr->left);
+        r=height(ptr->right);
+        if(l>=r)
+        {
+            return l+1;
+        }
+        else
+        {
+            return r+1;
+        }
+    }
+    void delete_merge(node* temp,int n)
+    {
+        node* prev=NULL;
+        while(temp!=NULL)
+        {
+            if(temp->data==n)
+            {
+                break;
+            }
+            prev=temp;
+            if(temp->data<n)
+            {
+                temp=temp->right;
+            }
+            else
+            {
+                temp=temp->left;
+            }
+        }
+        if(temp!=NULL&&temp->data==n)
+        {
+            if(temp==root)
+            {
+                delm(root);
+            }
+            else
+            if(prev->left==temp)
+            {
+                delm(prev->left);
+            }
+            else
+            if(prev->right==temp)
+            {
+                delm(prev->right);
+            }
+        }
+        else
+        if(root!=NULL)
+        {
+            cout<<temp->data<<" is not present in tree"<<endl;
+        }
+        else
+        {
+            cout<<"Tree is empty"<<endl;
+        }
+    }
+    void delm(node*& temp1)
+    {
+        node* tmp=temp1;
+        if(temp1!=NULL)
+        {
+            if(temp1->right==NULL)
+            {
+                temp1=temp1->left;
+            }
+            else
+            if(temp1->left==NULL)
+            {
+                temp1=temp1->right;
+            }
+            else
+	       {
+		      tmp=temp1->left;
+	          while(tmp->right!=NULL)
+		      {
+		        tmp=tmp->right;
+		      }
+		   tmp->right=temp1->right;
+		   tmp=temp1;
+		   temp1=temp1->left;
+	       }
+	       cout<<"Node deleted"<<endl;
+	      delete tmp;
+        }
+    }
+    void delete_copy(node* temp,int n)
+    {
+        node* prev=NULL;
+        while(temp!=NULL)
+        {
+            if(n==temp->data)
+            {
+                break;
+            }
+            prev=temp;
+            if(n>temp->data)
+            {
+                temp=temp->right;
+            }
+            else
+            if(n<temp->data)
+            {
+                temp=temp->left;
+            }
+        }
+        if(temp!=NULL&&temp->data==n)
+        {
+            if(temp==root)
+            {
+                delc(root);
+            }
+            else
+            if(prev->left==temp)
+            {
+                delc(prev->left);
+            }
+            else
+            if(prev->right==temp)
+            {
+                delc(prev->right);
+            }
+        }
+        else
+        if(root!=NULL)
+        {
+            cout<<temp->data<<" is not present in tree"<<endl;
+        }
+        else
+        {
+            cout<<"Tree is empty"<<endl;
+        }
+    }
+    void delc(node*& temp1)
+    {
+        
+	node* prev,*tmp=temp1;
+	if(temp1->right==NULL)
+		 temp1=temp1->left;
+	else if(temp1->left==NULL)
+		  temp1=temp1->right;
+	else
+	 {
+		tmp=temp1->left;
+		prev=temp1;
+		while(tmp->right!=NULL)
+		 {
+			prev=tmp;
+			tmp=tmp->right;
+		 }
+		temp1->data=tmp->data;
+		if(prev==temp1)
+			  prev->left=tmp->left;
+		else
+			  prev->right=tmp->left;
+	 }
+	 cout<<"Node deleted"<<endl;
+	delete tmp;
+ 
+    }
 };
-
 int main()
-{
-	bst ob;
-	char ch;
-	int num, num2;
-	int leaf, nleaf;
-	do
-	{
-		system("cls");
-		cout<<"\n********MENU***********";
-		cout<<"\n1. Insert element.";
-		cout<<"\n2. Pre-order traversal.";
-		cout<<"\n3. In-order traversal.";
-		cout<<"\n4. Post-order traversal.";
-		cout<<"\n5. Deletion by copying.";
-		cout<<"\n6. Deletion by merging.";
-		cout<<"\n7. Height of tree.";
-		cout<<"\n8. Mirror image of tree.";
-		cout<<"\n9. Count leaf and non-leaf nodes.";
-		cout<<"\n10. Search any value in tree.";
-		cout<<"\n11. Exit.";
-		cout<<"\nEnter your choice: ";
-		cin>>num;
-		
-		switch(num)
-		{
-			case 1: system("cls");
-					do{
-						cout<<"\nEnter value: ";
-						cin>>num2;
-						ob.insert(num2);
-						cout<<"\nEnter more values(y/n): ";
-						cin>>ch;
-					}while(ch=='y');
-					break;
-					
-			case 2: system("cls");
-					cout<<"\n1. Using iterative.";
-					cout<<"\n2. Using recursive.";
-					cout<<"\nEnter your choice: ";
-					cin>>num;
-					if(num==1)
-						ob.pre_order_ite( ob.ret_root());
-					else 
-						ob.pre_order_ite( ob.ret_root());
-					break;
-					
-			case 3: system("cls");
-					cout<<"\n1. Using iterative.";
-					cout<<"\n2. Using recursive.";
-					cout<<"\nEnter your choice: ";
-					cin>>num;
-					if(num==1)
-						ob.in_order_ite( ob.ret_root());
-					else 
-						ob.in_order_ite( ob.ret_root());
-					break;
-					
-			case 4: system("cls");
-					cout<<"\n1. Using iterative.";
-					cout<<"\n2. Using recursive.";
-					cout<<"\nEnter your choice: ";
-					cin>>num;
-					if(num==1)
-						ob.post_order_ite( ob.ret_root());
-					else 
-						ob.post_order_ite( ob.ret_root());
-					break;
-					
-			case 5: cout<<"\nValue to be deleted from tree: ";
-					cin>>num2;
-					ob.DeletebyCopying( ob.ret_root(), num2);
-					break;
-					
-			case 6:
-					break;
-					
-			case 7:	num2=ob.height( ob.ret_root());
-					cout<<"\nHeight of tree: "<<num2;
-					break;
-					
-			case 8: ob.mirror( ob.ret_root());
-					break;
-				
-			case 9: leaf=ob.getLeafCount( ob.ret_root());
-					nleaf=ob.totalNode( ob.ret_root()) -leaf;
-					if(leaf==1 && nleaf==0)
-					{
-						cout<<"\nOnly root node present.";
-					}
-					else
-					{
-						cout<<"\nNumber of leaf nodes: "<<leaf;
-						cout<<"\nNumber of non-leaf node: "<<nleaf;
-					}	
-					break;
-					
-			case 10:cout<<"\nEnter value for searching: ";
-					cin>>num2;
-					if( ob.search( ob.ret_root(), num2) )
-						cout<<"\nValue found in tree.";
-					else
-						cout<<"\nValue not found.";
-					break;
-					
-			case 11: cout<<"\nExiting...";
-					exit(100);
-					break;
-			default: cout<<"\nWrong input!!!";
-					break;
-		}
-		cout<<"\n\nReturn to menu(y/n): ";
-		cin>>ch;
-	}while(ch=='y');
-	return 0;
+{   int a,n,n1,n2,n3,n4;
+    char ch='y';
+    bst obj;
+    do{
+    cout<<"Insert data in BST"<<endl;
+    cin>>a;
+    obj.insert(a);
+    cout<<"Do you want to continue? "<<endl;
+    cin>>ch;
+    }while(ch=='y'||ch=='Y');
+    int choice,flag=1;
+ while(flag==1)
+ {  cout<<"0 : Exit"<<endl;
+    cout<<"1 : Recursive Inorder traversal"<<endl;
+    cout<<"2 : Recursive preorder traversal"<<endl;
+    cout<<"3 : Recursive postorder traversal"<<endl;
+    cout<<"4 : Searching an element"<<endl;
+    cout<<"5 : Iterative preorder traversal"<<endl;
+    cout<<"6 : Iterative Inorder traversal"<<endl;
+    cout<<"7 : Iterative postorder traversal"<<endl;
+    cout<<"8 : Level by level traversal (BFS)"<<endl;
+    cout<<"9 : Mirror image of tree"<<endl;
+    cout<<"10: Count the non-leaf, leaf and total number of nodes"<<endl;
+    cout<<"11: Search and replace"<<endl;
+    cout<<"12: Height of tree"<<endl;
+    cout<<"13: Deletion by merging"<<endl;
+    cout<<"14: Deletion by copying"<<endl;
+    cin>>choice;
+    switch(choice)
+    {
+        case 0: 
+                flag=0;
+                break;
+        case 1: 
+                 cout<<"Inorder traversal is: "<<endl;
+                 obj.rec_inorder(obj.root);
+                 cout<<endl;
+                 break;
+        case 2:
+                cout<<"Preorder traversal is: "<<endl;
+                obj.rec_preorder(obj.root);
+                cout<<endl;
+                break;
+        case 3:
+                cout<<"postorder traversal is: "<<endl;
+                obj.rec_postorder(obj.root);
+                cout<<endl;
+                break;
+        case 4:
+                cout<<"Enter data you want to search "<<endl;
+                cin>>n;
+                obj.search(n);
+                break;
+        case 5:
+                cout<<"Iterative preorder traversal is: "<<endl;
+                obj.it_preorder(obj.root);
+                cout<<endl;
+                break;
+         case 6:
+                cout<<"Iterative Inorder traversal is: "<<endl;
+                obj.it_Inorder(obj.root);
+                cout<<endl;
+                break;
+        case 7:
+                cout<<"Iterative postorder traversal is: "<<endl;
+                obj.it_postorder(obj.root);
+                cout<<endl;
+                break;
+        case 8:
+                cout<<"level by level traversal (BFS) is: "<<endl;
+                obj.bfs(obj.root);
+                cout<<endl;
+                break;
+        case 9:
+                cout<<"Mirror image of tree is created "<<endl;
+                obj.mirror(obj.root);
+                cout<<"BFS traversal of mirror image of tree is: ";
+                obj.bfs(obj.root);
+                cout<<endl;
+                break;
+        case 10:
+                obj.number(obj.root);
+                cout<<endl;
+                break;
+        case 11:
+                cout<<"Enter data you want to search"<<endl;
+                cin>>n1;
+                cout<<"Enter data you want to replace"<<endl;
+                cin>>n2;
+                obj.rep(n1,n2);
+                break;
+        case 12:
+               cout<<"Height of tree is: "<<obj.height(obj.root)<<endl;
+               break;
+        case 13:
+               cout<<"Enter the node you want to delete"<<endl;
+               cin>>n3;
+               obj.delete_merge(obj.root,n3);
+               cout<<endl;
+               break;
+        case 14:
+               cout<<"Enter the node you want to delete"<<endl;
+               cin>>n4;
+               obj.delete_copy(obj.root,n4);
+               cout<<endl;
+               break;
+        default: cout<<"invalid input"<<endl;
+    }
+ }
+    return 0;
 }
